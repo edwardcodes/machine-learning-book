@@ -93,8 +93,7 @@ def tokenizer(text):
     text = re.sub('<[^>]*>', '', text)
     emoticons = re.findall('(?::|;|=)(?:-)?(?:\)|\(|D|P)', text.lower())
     text = re.sub('[\W]+', ' ', text.lower()) +        ' '.join(emoticons).replace('-', '')
-    tokenized = text.split()
-    return tokenized
+    return text.split()
 
 
 for label, line in train_dataset:
