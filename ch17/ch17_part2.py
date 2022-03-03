@@ -8,8 +8,8 @@ import torch
 import torch.nn as nn
 import numpy as np
 import matplotlib.pyplot as plt
-import torchvision 
-from torchvision import transforms 
+import torchvision
+from torchvision import transforms
 from torch.utils.data import DataLoader
 from torch.autograd import grad as torch_grad
 
@@ -109,17 +109,7 @@ check_packages(d)
 print(torch.__version__)
 print("GPU Available:", torch.cuda.is_available())
 
-if torch.cuda.is_available():
-    device = torch.device("cuda:0")
-else:
-    device = "cpu"
-
-
-
-
-
-
-
+device = torch.device("cuda:0") if torch.cuda.is_available() else "cpu"
 # ## Train the DCGAN model
 
 
@@ -149,7 +139,7 @@ mnist_dl = DataLoader(mnist_dataset, batch_size=batch_size,
 
 
 def make_generator_network(input_size, n_filters):
-    model = nn.Sequential(
+    return nn.Sequential(
         nn.ConvTranspose2d(input_size, n_filters*4, 4, 1, 0, 
                            bias=False),
         nn.BatchNorm2d(n_filters*4),
@@ -165,7 +155,6 @@ def make_generator_network(input_size, n_filters):
 
         nn.ConvTranspose2d(n_filters, 1, 4, 2, 1, bias=False),
         nn.Tanh())
-    return model
 
 class Discriminator(nn.Module):
     def __init__(self, n_filters):
@@ -288,11 +277,11 @@ torch.manual_seed(1)
 for epoch in range(1, num_epochs+1):    
     gen_model.train()
     d_losses, g_losses = [], []
-    for i, (x, _) in enumerate(mnist_dl):
+    for x, _ in mnist_dl:
         d_loss, d_proba_real, d_proba_fake = d_train(x)
         d_losses.append(d_loss)
         g_losses.append(g_train(x))
- 
+
     print(f'Epoch {epoch:03d} | Avg Losses >>'
           f' G/D {torch.FloatTensor(g_losses).mean():.4f}'
           f'/{torch.FloatTensor(d_losses).mean():.4f}')
@@ -317,10 +306,10 @@ for i,e in enumerate(selected_epochs):
                 horizontalalignment='right',
                 verticalalignment='center', 
                 transform=ax.transAxes)
-        
+
         image = epoch_samples[e-1][j]
         ax.imshow(image, cmap='gray_r')
-    
+
 # plt.savefig('figures/ch17-dcgan-samples.pdf')
 plt.show()
 
@@ -344,7 +333,7 @@ plt.show()
 
 
 def make_generator_network_wgan(input_size, n_filters):
-    model = nn.Sequential(
+    return nn.Sequential(
         nn.ConvTranspose2d(input_size, n_filters*4, 4, 1, 0, 
                            bias=False),
         nn.InstanceNorm2d(n_filters*4),
@@ -360,7 +349,6 @@ def make_generator_network_wgan(input_size, n_filters):
 
         nn.ConvTranspose2d(n_filters, 1, 4, 2, 1, bias=False),
         nn.Tanh())
-    return model
 
 class DiscriminatorWGAN(nn.Module):
     def __init__(self, n_filters):
@@ -470,12 +458,12 @@ critic_iterations = 5
 for epoch in range(1, num_epochs+1):    
     gen_model.train()
     d_losses, g_losses = [], []
-    for i, (x, _) in enumerate(mnist_dl):
+    for x, _ in mnist_dl:
         for _ in range(critic_iterations):
             d_loss = d_train_wgan(x)
         d_losses.append(d_loss)
         g_losses.append(g_train_wgan(x))
- 
+
     print(f'Epoch {epoch:03d} | D Loss >>'
           f' {torch.FloatTensor(d_losses).mean():.4f}')
     gen_model.eval()
@@ -500,10 +488,10 @@ for i,e in enumerate(selected_epochs):
                 horizontalalignment='right',
                 verticalalignment='center', 
                 transform=ax.transAxes)
-        
+
         image = epoch_samples_wgan[e-1][j]
         ax.imshow(image, cmap='gray_r')
-    
+
 # plt.savefig('figures/ch17-wgan-gp-samples.pdf')
 plt.show()
 

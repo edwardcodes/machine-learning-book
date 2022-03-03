@@ -319,18 +319,17 @@ def minibatch_generator(X, y, minibatch_size):
 
         
 # iterate over training epochs
-for i in range(num_epochs):
-
+for _ in range(num_epochs):
     # iterate over minibatches
     minibatch_gen = minibatch_generator(
         X_train, y_train, minibatch_size)
-    
+
     for X_train_mini, y_train_mini in minibatch_gen:
 
         break
-        
+
     break
-    
+
 print(X_train_mini.shape)
 print(y_train_mini.shape)
 
@@ -363,20 +362,20 @@ print(f'Initial validation accuracy: {acc*100:.1f}%')
 def compute_mse_and_acc(nnet, X, y, num_labels=10, minibatch_size=100):
     mse, correct_pred, num_examples = 0., 0, 0
     minibatch_gen = minibatch_generator(X, y, minibatch_size)
-        
+
     for i, (features, targets) in enumerate(minibatch_gen):
 
         _, probas = nnet.forward(features)
         predicted_labels = np.argmax(probas, axis=1)
-        
+
         onehot_targets = int_to_onehot(targets, num_labels=num_labels)
         loss = np.mean((onehot_targets - probas)**2)
         correct_pred += (predicted_labels == targets).sum()
-        
+
         num_examples += targets.shape[0]
         mse += loss
 
-    mse = mse/i
+    mse /= i
     acc = correct_pred/num_examples
     return mse, acc
 

@@ -282,16 +282,16 @@ def sample(model, starting_str,
     cell = cell.to('cpu')
     for c in range(len(starting_str)-1):
         _, hidden, cell = model(encoded_input[:, c].view(1), hidden, cell) 
-    
+
     last_char = encoded_input[:, -1]
-    for i in range(len_generated_text):
-        logits, hidden, cell = model(last_char.view(1), hidden, cell) 
+    for _ in range(len_generated_text):
+        logits, hidden, cell = model(last_char.view(1), hidden, cell)
         logits = torch.squeeze(logits, 0)
         scaled_logits = logits * scale_factor
         m = Categorical(logits=scaled_logits)
         last_char = m.sample()
         generated_str += str(char_array[last_char])
-        
+
     return generated_str
 
 torch.manual_seed(1)
